@@ -1,0 +1,3 @@
+boto3
+datasette
+sqlite-utils
