@@ -51,6 +51,7 @@ def store_ec2_spot_prices(regions_and_zones):
             )
         except EndpointConnectionError as _error:
             logger.warning(f'Skipping {region} due to Network issue while calling the API')
+            continue
 
         for price in spot_price_response["SpotPriceHistory"]:
             data = {

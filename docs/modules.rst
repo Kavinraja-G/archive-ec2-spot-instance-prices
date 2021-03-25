@@ -5,6 +5,6 @@ archive-ec2-spot-instance-prices
    :maxdepth: 4
 
    installation
-   ec2spotinstances
+   archivespotprices
    aws_assets
    db
