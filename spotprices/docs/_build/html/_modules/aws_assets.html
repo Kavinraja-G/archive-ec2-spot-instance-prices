@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aws_assets &mdash; Archive-EC2-SpotPrices 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Archive-EC2-SpotPrices
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">archive-ec2-spot-instance-prices</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Archive-EC2-SpotPrices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>aws_assets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aws_assets</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">boto3</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
+
+<span class="c1"># Logger Configuration</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] </span><span class="si">%(levelname)s</span><span class="s1"> :: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># Get all ec2 instance types for a region</span>
+<div class="viewcode-block" id="get_all_instance_types"><a class="viewcode-back" href="../aws_assets.html#aws_assets.get_all_instance_types">[docs]</a><span class="k">def</span> <span class="nf">get_all_instance_types</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get all the instances types in a particular region</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        **region (str):** A valid AWS-region should be passed in this function as a argument  </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        **List:** A list of all instance types in a particular region        </span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt; *get_all_instance_types(&#39;us-east-1&#39;)* </span>
+<span class="sd">        </span>
+<span class="sd">        *[&#39;t2.micro&#39;, &#39;t2.medium&#39;, &#39;c5.xlarge&#39;,...]*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ec2</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;ec2&#39;</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region</span><span class="p">)</span>
+    <span class="n">responses</span> <span class="o">=</span> <span class="n">ec2</span><span class="o">.</span><span class="n">describe_instance_types</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;InstanceType&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">[</span><span class="s1">&#39;InstanceTypes&#39;</span><span class="p">]]</span></div>
+
+
+<span class="c1"># To get all the regions of the AWS Account</span>
+<div class="viewcode-block" id="get_all_regions"><a class="viewcode-back" href="../aws_assets.html#aws_assets.get_all_regions">[docs]</a><span class="k">def</span> <span class="nf">get_all_regions</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get all the regions in the AWS Account that is configure via the *.aws/credentials*</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None  </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        **List:** A list of all regions that are enabled in the AWS account.        </span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt; *get_all_regions()* </span>
+<span class="sd">        </span>
+<span class="sd">        *[&#39;us-east-1&#39;, &#39;us-east-2&#39;, &#39;ap-southeast-1&#39;,...]*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Getting AWS Regions...&#39;</span><span class="p">)</span>
+    <span class="n">ec2</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;ec2&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="n">region</span><span class="p">[</span><span class="s1">&#39;RegionName&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">ec2</span><span class="o">.</span><span class="n">describe_regions</span><span class="p">()[</span><span class="s1">&#39;Regions&#39;</span><span class="p">]</span> <span class="p">]</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Kavinraja G.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

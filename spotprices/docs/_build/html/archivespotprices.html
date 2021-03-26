@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>archivespotprices module &mdash; Archive-EC2-SpotPrices 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="aws_assets module" href="aws_assets.html" />
+    <link rel="prev" title="Project Overview &amp; Installation Guide" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Archive-EC2-SpotPrices
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">archive-ec2-spot-instance-prices</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Project Overview &amp; Installation Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">archivespotprices module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_assets.html">aws_assets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="db.html">db module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Archive-EC2-SpotPrices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">archive-ec2-spot-instance-prices</a> &raquo;</li>
+        
+      <li>archivespotprices module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/archivespotprices.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-archivespotprices">
+<span id="archivespotprices-module"></span><h1>archivespotprices module<a class="headerlink" href="#module-archivespotprices" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="archivespotprices.get_ec2_spot_prices">
+<code class="sig-prename descclassname"><span class="pre">archivespotprices.</span></code><code class="sig-name descname"><span class="pre">get_ec2_spot_prices</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/archivespotprices.html#get_ec2_spot_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#archivespotprices.get_ec2_spot_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to crawl all the ec2-spot-instance prices of all instances across all AZs in regions using the boto3 aws
+SDK</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p><strong>regions (list):</strong> List of regions enabled in the AWS account that is fetched from the aws_assets module</p>
+</dd>
+<dt>Returns:</dt><dd><p><strong>None</strong></p>
+</dd>
+<dt>Examples:</dt><dd><p>&gt;&gt; <em>get_ec2_spot_prices([ “sa-east-1” ])</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="archivespotprices.main">
+<code class="sig-prename descclassname"><span class="pre">archivespotprices.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/archivespotprices.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#archivespotprices.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>This main function calls all sub-functions and also the sub-modules in an ordered way to achieve the end goal
+of archiving the database with the spot prices of the ec2-instances across all availability zones in all regions.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>aws_assets.get_all_regions =&gt;</strong> This module is called to get all the regions of the AWS account</p></li>
+<li><p><strong>get_ec2_spot_prices(regions) =&gt;</strong> This function is called with the parameter <em>regions</em> 
+loaded with the dictionary(key, val) in the <em>regions-and-zones.json</em> file</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p><strong>None</strong></p>
+</dd>
+<dt>Returns:</dt><dd><p><strong>None</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="archivespotprices.store_ec2_spot_prices">
+<code class="sig-prename descclassname"><span class="pre">archivespotprices.</span></code><code class="sig-name descname"><span class="pre">store_ec2_spot_prices</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spot_prices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/archivespotprices.html#store_ec2_spot_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#archivespotprices.store_ec2_spot_prices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="aws_assets.html" class="btn btn-neutral float-right" title="aws_assets module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Project Overview &amp; Installation Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Kavinraja G.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

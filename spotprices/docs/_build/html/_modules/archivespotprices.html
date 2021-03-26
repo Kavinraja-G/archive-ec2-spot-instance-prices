@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>archivespotprices &mdash; Archive-EC2-SpotPrices 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Archive-EC2-SpotPrices
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">archive-ec2-spot-instance-prices</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Archive-EC2-SpotPrices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>archivespotprices</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for archivespotprices</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">db</span> <span class="k">as</span> <span class="n">Database</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">aws_assets</span>
+<span class="kn">from</span> <span class="nn">botocore.exceptions</span> <span class="k">import</span> <span class="n">EndpointConnectionError</span>
+
+
+<span class="c1"># Constants</span>
+<span class="n">database_name</span>        <span class="o">=</span> <span class="s2">&quot;spotprices&quot;</span>
+<span class="n">table_name</span>           <span class="o">=</span> <span class="s2">&quot;spotprices&quot;</span>
+<span class="n">time_stamp</span>           <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+<span class="n">product_descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Linux/UNIX&#39;</span><span class="p">]</span>
+
+
+<span class="c1"># Logger Configuration</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;[</span><span class="si">%(asctime)s</span><span class="s1">] </span><span class="si">%(levelname)s</span><span class="s1"> :: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># Init Database</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">DB</span><span class="p">(</span> <span class="n">database_name</span> <span class="o">=</span> <span class="n">database_name</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">=</span> <span class="n">table_name</span> <span class="p">)</span>
+
+
+<span class="c1"># Insert Spot-Prices of Regions into Database</span>
+<div class="viewcode-block" id="store_ec2_spot_prices"><a class="viewcode-back" href="../archivespotprices.html#archivespotprices.store_ec2_spot_prices">[docs]</a><span class="k">def</span> <span class="nf">store_ec2_spot_prices</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">spot_prices</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">db</span>
+    <span class="k">for</span> <span class="n">price</span> <span class="ow">in</span> <span class="n">spot_prices</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Inserting Spot-Price of Instance: </span><span class="si">{price[&quot;InstanceType&quot;]}</span><span class="s1"> in AZ: </span><span class="si">{price[&quot;AvailabilityZone&quot;]}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;Region&quot;</span><span class="p">:</span> <span class="n">region</span><span class="p">,</span>
+                <span class="s2">&quot;AZ&quot;</span><span class="p">:</span> <span class="n">price</span><span class="p">[</span><span class="s2">&quot;AvailabilityZone&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;InstanceType&quot;</span><span class="p">:</span> <span class="n">price</span><span class="p">[</span><span class="s2">&quot;InstanceType&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Product&quot;</span><span class="p">:</span> <span class="n">price</span><span class="p">[</span><span class="s2">&quot;ProductDescription&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Price&quot;</span><span class="p">:</span> <span class="n">price</span><span class="p">[</span><span class="s2">&quot;SpotPrice&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;TimeStamp&quot;</span><span class="p">:</span> <span class="n">time_stamp</span>
+            <span class="p">}</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>    </div>
+
+
+<span class="c1"># Get EC2 Spot Instance Prices across all regions</span>
+<div class="viewcode-block" id="get_ec2_spot_prices"><a class="viewcode-back" href="../archivespotprices.html#archivespotprices.get_ec2_spot_prices">[docs]</a><span class="k">def</span> <span class="nf">get_ec2_spot_prices</span><span class="p">(</span><span class="n">regions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to crawl all the ec2-spot-instance prices of all instances across all AZs in regions using the boto3 aws</span>
+<span class="sd">    SDK</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        **regions (list):** List of regions enabled in the AWS account that is fetched from the aws_assets module</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        **None**</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt; *get_ec2_spot_prices([ &quot;sa-east-1&quot; ])*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">regions</span><span class="p">:</span>
+        <span class="n">ec2</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;ec2&#39;</span><span class="p">,</span><span class="n">region_name</span> <span class="o">=</span> <span class="n">region</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Getting Spot-prices in </span><span class="si">{region}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">instance_types</span> <span class="o">=</span> <span class="n">aws_assets</span><span class="o">.</span><span class="n">get_all_instance_types</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">spot_price_response</span> <span class="o">=</span> <span class="n">ec2</span><span class="o">.</span><span class="n">describe_spot_price_history</span><span class="p">(</span>
+                <span class="n">InstanceTypes</span>       <span class="o">=</span> <span class="n">instance_types</span><span class="p">,</span>
+                <span class="n">ProductDescriptions</span> <span class="o">=</span> <span class="n">product_descriptions</span><span class="p">,</span>
+                <span class="n">StartTime</span>           <span class="o">=</span> <span class="n">time_stamp</span><span class="p">,</span>
+                <span class="n">EndTime</span>             <span class="o">=</span> <span class="n">time_stamp</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">EndpointConnectionError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Skipping </span><span class="si">{region}</span><span class="s1"> due to Network issue while calling the API&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">store_ec2_spot_prices</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">spot_price_response</span><span class="p">[</span><span class="s2">&quot;SpotPriceHistory&quot;</span><span class="p">])</span></div>
+
+
+<span class="c1"># Driver Function</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../archivespotprices.html#archivespotprices.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This main function calls all sub-functions and also the sub-modules in an ordered way to achieve the end goal</span>
+<span class="sd">    of archiving the database with the spot prices of the ec2-instances across all availability zones in all regions.</span>
+<span class="sd">        </span>
+<span class="sd">        - **aws_assets.get_all_regions =&gt;** This module is called to get all the regions of the AWS account</span>
+<span class="sd">        - **get_ec2_spot_prices(regions) =&gt;** This function is called with the parameter *regions* </span>
+<span class="sd">          loaded with the dictionary(key, val) in the *regions-and-zones.json* file</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        **None**</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        **None**</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">aws_assets</span><span class="o">.</span><span class="n">get_all_regions</span><span class="p">()</span>
+    
+    <span class="n">get_ec2_spot_prices</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Kavinraja G.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

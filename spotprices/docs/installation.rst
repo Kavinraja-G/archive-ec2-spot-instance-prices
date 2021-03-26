@@ -30,8 +30,12 @@ A step by step series of examples that tell you how to get a development
 env running
 
 Use pip to install the required packages mentioned in the
-``requirements.txt`` file
+``setup.py`` file
 
 ::
 
-    pip3 install -r requirements.txt
+   git clone https://github.com/Kavinraja-G/archive-ec2-spot-instance-prices.git
+
+   cd archive-ec2-spot-instance-prices
+
+   pip3 install .
