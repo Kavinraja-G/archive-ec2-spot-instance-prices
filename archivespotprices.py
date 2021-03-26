@@ -6,16 +6,21 @@ from utils import db as Database
 from utils import aws_assets
 from botocore.exceptions import EndpointConnectionError
 
+
 # Constants
+filename             = 'regions-and-zones.json'
 database_name        = "spotprices"
 table_name           = "spotprices"
 time_stamp           = datetime.utcnow()
 product_descriptions = ['Linux/UNIX']
 
+
 # Logger Configuration
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s :: %(message)s')
 logger = logging.getLogger(__name__)
 
+
+# Init Database
 db = Database.DB( database_name = database_name, table_name = table_name )
 
 
@@ -54,6 +59,7 @@ def store_ec2_spot_prices(regions_and_zones):
             continue
 
         for price in spot_price_response["SpotPriceHistory"]:
+            logger.info(f'Inserting Spot-Price of Instance: {price["InstanceType"]} in AZ: {price["AvailabilityZone"]}')
             data = {
                     "Region": region,
                     "AZ": price["AvailabilityZone"],
@@ -87,7 +93,7 @@ def main():
     
     regions_and_zones = {}
 
-    with open('regions-and-zones.json', 'r') as f:
+    with open(filename, 'r') as f:
         regions_and_zones = json.load(f)
     
     store_ec2_spot_prices(regions_and_zones)
