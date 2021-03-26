@@ -8,7 +8,6 @@ from botocore.exceptions import EndpointConnectionError
 
 
 # Constants
-filename             = 'regions-and-zones.json'
 database_name        = "spotprices"
 table_name           = "spotprices"
 time_stamp           = datetime.utcnow()
@@ -24,25 +23,40 @@ logger = logging.getLogger(__name__)
 db = Database.DB( database_name = database_name, table_name = table_name )
 
 
-# Get and Store EC2 Spot Instance Prices in DB
-def store_ec2_spot_prices(regions_and_zones):
+# Insert Spot-Prices of Regions into Database
+def store_ec2_spot_prices(region, spot_prices):
+    global db
+    for price in spot_prices:
+        logger.info(f'Inserting Spot-Price of Instance: {price["InstanceType"]} in AZ: {price["AvailabilityZone"]}')
+        data = {
+                "Region": region,
+                "AZ": price["AvailabilityZone"],
+                "InstanceType": price["InstanceType"],
+                "Product": price["ProductDescription"],
+                "Price": price["SpotPrice"],
+                "TimeStamp": time_stamp
+            }
+        db.insert_data(data)    
+
+
+# Get EC2 Spot Instance Prices across all regions
+def get_ec2_spot_prices(regions):
     """
-    Function to crawl all the ec2-spot-instance prices of all instances across all AZs in regions and store in a Database
-    that is already created during the DB initialization.
+    Function to crawl all the ec2-spot-instance prices of all instances across all AZs in regions using the boto3 aws
+    SDK
 
     Args:
-        **regions_and_zones (dict):** This is loaded locally from the file regions_and_zones.json created by 
-        the module aws_assets.py
+        **regions (list):** List of regions enabled in the AWS account that is fetched from the aws_assets module
 
     Returns:
         **None**
 
     Examples:
-        >> *store_ec2_spot_prices({ "sa-east-1": ["sa-east-1a"] })*
+        >> *get_ec2_spot_prices([ "sa-east-1" ])*
 
     """
-    global db
-    for region, _zones in regions_and_zones.items():
+    
+    for region in regions:
         ec2 = boto3.client('ec2',region_name = region)
         logger.info(f'Getting Spot-prices in {region}')
         instance_types = aws_assets.get_all_instance_types(region)
@@ -58,17 +72,7 @@ def store_ec2_spot_prices(regions_and_zones):
             logger.warning(f'Skipping {region} due to Network issue while calling the API')
             continue
 
-        for price in spot_price_response["SpotPriceHistory"]:
-            logger.info(f'Inserting Spot-Price of Instance: {price["InstanceType"]} in AZ: {price["AvailabilityZone"]}')
-            data = {
-                    "Region": region,
-                    "AZ": price["AvailabilityZone"],
-                    "InstanceType": price["InstanceType"],
-                    "Product": price["ProductDescription"],
-                    "Price": price["SpotPrice"],
-                    "TimeStamp": time_stamp
-                }
-            db.insert_data(data)
+        store_ec2_spot_prices(region, spot_price_response["SpotPriceHistory"])
 
 
 # Driver Function
@@ -77,9 +81,8 @@ def main():
     This main function calls all sub-functions and also the sub-modules in an ordered way to achieve the end goal
     of archiving the database with the spot prices of the ec2-instances across all availability zones in all regions.
         
-        - **aws_assets.main =>** This module is called to check whether *regions-and-zones.json* file is present in the
-          local directory and if not it creates that
-        - **store_ec2_spot_prices(region_and_zones) =>** This function is called with the parameter *regions_and_zones* 
+        - **aws_assets.get_all_regions =>** This module is called to get all the regions of the AWS account
+        - **get_ec2_spot_prices(regions) =>** This function is called with the parameter *regions* 
           loaded with the dictionary(key, val) in the *regions-and-zones.json* file
     
     Args:
@@ -89,14 +92,10 @@ def main():
         **None**
 
     """
-    aws_assets.main()
     
-    regions_and_zones = {}
-
-    with open(filename, 'r') as f:
-        regions_and_zones = json.load(f)
+    regions = aws_assets.get_all_regions()
     
-    store_ec2_spot_prices(regions_and_zones)
+    get_ec2_spot_prices(regions)
 
 
 if __name__ == "__main__":
